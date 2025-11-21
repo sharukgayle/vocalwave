@@ -3,6 +3,8 @@ import { useState } from "react";
 export default function Home() {
   const [text, setText] = useState("");
   const [response, setResponse] = useState("");
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL || "https://vocalwave.onrender.com";
 
   const handleSpeak = async () => {
     if (!text.trim()) {
@@ -10,18 +12,15 @@ export default function Home() {
       return;
     }
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "https://vocalwave.onrender.com"}/api/speak`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text }),
-        }
-      );
+      const res = await fetch(`${API_URL}/api/speak`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
       const data = await res.json();
       setResponse(data.spoken_text || data.error || "No response");
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       setResponse("Error connecting to backend.");
     }
   };
@@ -36,28 +35,30 @@ export default function Home() {
       }}
     >
       <h1>🗣️ Speakify</h1>
-      <p>Type something and click Speak to test the connection.</p>
+      <p>Type something and click Speak to test your backend connection.</p>
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
         rows={5}
         cols={50}
-        style={{ padding: "10px" }}
+        placeholder="Enter text here..."
+        style={{ padding: "10px", fontSize: "16px" }}
       />
       <br />
       <button
         onClick={handleSpeak}
         style={{
-          marginTop: "10px",
-          padding: "10px 20px",
+          marginTop: "15px",
+          padding: "10px 25px",
           fontSize: "16px",
           cursor: "pointer",
         }}
       >
         Speak
       </button>
+
       {response && (
-        <p style={{ marginTop: "20px", fontWeight: "bold" }}>
+        <p style={{ marginTop: "25px", fontWeight: "bold", fontSize: "18px" }}>
           Backend says: {response}
         </p>
       )}
